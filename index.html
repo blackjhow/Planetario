@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=800, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>INTEGRAÇÃO</title>
+    <script src="https://code.jquery.com/jquery-1.11.3.js" crossorigin="anonymous"></script>
+    <script>
+
+        jQuery("document").ready(function(){
+            var host = "http://localhost:4000/"
+            jQuery.post(host + "planetario/galaxia","{}",                 
+                function(data, status){
+                    data.unshift({"ID" : "", "NOME" : "Selecione a Galaxia"})
+                    setSelector("listGalaxia",data);
+                }
+            );
+
+            jQuery("#listGalaxia").change(function(){                
+                reloadPlaneta(jQuery("#listGalaxia option:selected").attr("value"))              
+            })
+
+            jQuery("#listPlaneta").change(function(){                
+                reloadContinente(jQuery("#listPlaneta option:selected").attr("value"))              
+            })
+
+            jQuery("#listContinente").change(function(){                
+                reloadPais(jQuery("#listContinente option:selected").attr("value"))              
+            })
+
+             jQuery("#listEstado").change(function(){                
+                reloadCidade(jQuery("#listEstado option:selected").attr("value"))              
+            })
+
+
+            function reloadPlaneta(id){
+                jQuery.post(host + "planetario/getPlanetasGalaxia",{"id": id}, 
+                    function(data, status){
+                        setSelector("listPlaneta",data);
+                        reloadContinente(jQuery("#listPlaneta option:selected").attr("value"))
+                    }
+                );                     
+            }
+
+            function reloadContinente(id){
+                jQuery.post(host + "planetario/getContinentesPlaneta",{"id": id}, 
+                    function(data, status){
+                        setSelector("listContinente",data);
+                        reloadPais(jQuery("#listPlaneta option:selected").attr("value"))
+                    }
+                );                     
+            }
+
+            function reloadPais(id){
+                jQuery.post(host + "planetario/getPaisesContinente",{"id": id}, 
+                    function(data, status){
+                        setSelector("listPais",data);
+                        reloadEstado(jQuery("#listPlaneta option:selected").attr("value"))
+                    }
+                );                     
+            }
+
+            function reloadEstado(id){
+                jQuery.post(host + "planetario/getEstadosPais",{"id": id}, 
+                    function(data, status){
+                        setSelector("listEstado",data);
+                        reloadCidade(jQuery("#listPlaneta option:selected").attr("value"))
+                    }
+                );
+
+            }
+
+            function reloadCidade(id){
+                jQuery.post(host + "planetario/getCidadesEstado",{"id": id}, 
+                    function(data, status){
+                        setSelector("listCidade",data);
+                    }
+
+                );
+
+            }
+
+
+
+        });
+
+        function setSelector(selector, data){
+            $("#" + selector).empty()
+            jQuery.each(data, function(index, value){                
+                $("#" + selector).append(new Option(value.NOME, value.ID));
+            });
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <span>Galaxia</span>
+        <select name="galaxia" id="listGalaxia"></select>
+    </div>
+    
+    <div>
+        <span>Planeta</span>
+        <select name="planeta" id="listPlaneta"></select>
+    </div>
+
+    <div>
+        <span>Continente</span>
+        <select name="continente" id="listContinente"></select>
+    </div>
+    <div>
+        <span>País</span>
+        <select name="pais" id="listPais"></select>
+    </div>
+    <div>
+        <span>Estado</span>
+        <select name="estado" id="listEstado"></select>
+    </div>
+    <div>
+        <span>Cidade</span>
+        <select name="cidade" id="listCidade"></select>
+    </div>
+        
+        
+</body>
+
+</html>
